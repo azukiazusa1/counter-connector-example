@@ -1,0 +1,28 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+exporters:
+  prometheus:
+    endpoint: "0.0.0.0:8889"
+
+connectors:
+  count:
+    logs:
+      error_log_count:
+        description: Error log count
+        conditions:
+          - severity_number >= SEVERITY_NUMBER_ERROR
+        attributes:
+          - key: env
+            default_value: "unknown"
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      exporters: [count]
+    metrics:
+      receivers: [count]
+      exporters: [prometheus]
